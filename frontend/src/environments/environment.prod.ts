@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  // Must match Render Web service name: https://<name>.onrender.com
-  apiBaseUrl: 'https://bespeak-api.onrender.com/api',
+  // Railway API domain, e.g. https://bespeak-api.up.railway.app
+  apiBaseUrl: 'https://bespeak-api.up.railway.app/api',
 };

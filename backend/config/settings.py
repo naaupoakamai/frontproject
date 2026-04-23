@@ -15,9 +15,12 @@ SECRET_KEY = os.environ.get(
     'django-insecure-d$=2#puw+^bacaoj2#g$eg1kr0f=em2afqb2i2sk^i^^i-64a^',
 )
 
-_render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip()
-if _render_host:
-    ALLOWED_HOSTS = [_render_host]
+_platform_host = (
+    os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip()
+    or os.environ.get('RAILWAY_PUBLIC_DOMAIN', '').strip()
+)
+if _platform_host:
+    ALLOWED_HOSTS = [_platform_host]
 elif os.environ.get('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS = [
         h.strip()
@@ -46,8 +49,8 @@ CSRF_TRUSTED_ORIGINS = []
 for origin in CORS_ALLOWED_ORIGINS:
     if origin and origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(origin)
-if _render_host:
-    _origin = f'https://{_render_host}'
+if _platform_host:
+    _origin = f'https://{_platform_host}'
     if _origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(_origin)
 
