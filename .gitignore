@@ -9,6 +9,7 @@ frontend/dist
 
 # Node
 /node_modules
+frontend/node_modules
 npm-debug.log
 yarn-error.log
 

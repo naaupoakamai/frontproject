@@ -30,14 +30,11 @@ services:
       - key: OPENAI_API_KEY
         sync: false
 
-  # Static site: Render UI may keep Publish path .../browser; copy flat build output there.
+  # Frontend as Node Web Service (serve SPA). Удали старый Static Site с тем же именем, если Render не даёт сменить тип.
   - type: web
     name: bespeak-web
-    runtime: static
+    runtime: node
+    plan: free
     rootDir: frontend
-    buildCommand: 'npm ci && npm run build && mkdir -p dist/bespeak/browser && find dist/bespeak -maxdepth 1 -type f -exec cp {} dist/bespeak/browser/ \;'
-    staticPublishPath: frontend/dist/bespeak/browser
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:render
