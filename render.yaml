@@ -30,12 +30,13 @@ services:
       - key: OPENAI_API_KEY
         sync: false
 
+  # Static site: Render UI may keep Publish path .../browser; copy flat build output there.
   - type: web
     name: bespeak-web
     runtime: static
     rootDir: frontend
-    buildCommand: npm ci && npm run build
-    staticPublishPath: frontend/dist/bespeak
+    buildCommand: 'npm ci && npm run build && mkdir -p dist/bespeak/browser && find dist/bespeak -maxdepth 1 -type f -exec cp {} dist/bespeak/browser/ \;'
+    staticPublishPath: frontend/dist/bespeak/browser
     routes:
       - type: rewrite
         source: /*
