@@ -1,0 +1,119 @@
+<section class="border border-black bg-white">
+  <div class="flex flex-col gap-4 border-b border-black p-4 md:flex-row md:items-center md:justify-between md:px-8">
+    <h2 class="font-['Didot','Playfair_Display',serif] text-2xl tracking-[0.12em] md:text-3xl">Customer Interface</h2>
+    <div class="flex border border-black">
+      <button
+        type="button"
+        (click)="setActiveTab('ai-stylist')"
+        class="px-4 py-2 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out"
+        [class.bg-black]="activeTab() === 'ai-stylist'"
+        [class.text-white]="activeTab() === 'ai-stylist'"
+      >
+        AI Stylist
+      </button>
+      <button
+        type="button"
+        (click)="setActiveTab('catalog')"
+        class="px-4 py-2 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out"
+        [class.bg-black]="activeTab() === 'catalog'"
+        [class.text-white]="activeTab() === 'catalog'"
+      >
+        Classic Catalog
+      </button>
+    </div>
+  </div>
+
+  @if (activeTab() === 'ai-stylist') {
+    <div class="fade-in relative min-h-[74vh] bg-white p-5 pb-28 md:p-10 md:pb-32">
+      <div class="mx-auto max-w-5xl space-y-6">
+        @for (message of messages(); track $index) {
+          <article class="border-b border-black pb-4">
+            <p class="mb-2 text-xs uppercase tracking-[0.14em] text-black/55">{{ message.role }}</p>
+            <p class="text-sm md:text-base">{{ message.content }}</p>
+          </article>
+        }
+
+        @if (aiProducts().length > 0) {
+          <article class="border-b border-black pb-4">
+            <p class="mb-2 text-xs uppercase tracking-[0.14em] text-black/55">MATCHED PRODUCTS</p>
+            <div class="flex flex-wrap gap-2">
+              @for (product of aiProducts(); track product.id) {
+                <span class="border border-black px-3 py-1 text-[11px] uppercase tracking-[0.08em]">{{ product.brand }}</span>
+              }
+            </div>
+          </article>
+        }
+      </div>
+
+      <div class="fixed bottom-0 left-0 right-0 border-t border-black bg-white px-4 py-4 md:px-16">
+        <div class="mx-auto flex max-w-5xl items-center gap-3">
+          <input
+            [value]="chatInput()"
+            (input)="chatInput.set($any($event.target).value)"
+            type="text"
+            placeholder="Опишите желаемый образ..."
+            class="w-full border-0 border-b border-black px-0 py-3 text-sm outline-none"
+          />
+          <button
+            type="button"
+            (click)="sendChatMessage()"
+            class="border border-black px-5 py-3 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out hover:shadow-sm"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="fade-in grid grid-cols-1 lg:grid-cols-12">
+      <aside class="border-b border-black p-5 lg:col-span-3 lg:border-b-0 lg:border-r lg:p-8">
+        <h3 class="font-['Didot','Playfair_Display',serif] text-xl tracking-[0.1em]">Filters</h3>
+        <div class="mt-6 space-y-6">
+          <div>
+            <label class="text-xs uppercase tracking-[0.14em] text-black/60">Category</label>
+            <select
+              class="mt-2 w-full border border-black bg-white p-3 text-sm"
+              (change)="updateCategory($any($event.target).value)"
+            >
+              @for (category of categoryOptions(); track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs uppercase tracking-[0.14em] text-black/60">Max Price: {{ maxPrice() }}</label>
+            <input type="range" min="100" max="2000" step="50" [value]="maxPrice()" (input)="updateMaxPrice(+$any($event.target).value)" class="mt-2 w-full accent-black" />
+          </div>
+        </div>
+      </aside>
+
+      <div class="p-5 lg:col-span-9 lg:p-8">
+        @if (isLoading()) {
+          <p class="text-sm uppercase tracking-[0.14em] text-black/60">Loading catalog...</p>
+        } @else {
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            @for (product of getFilteredProducts(); track product.id) {
+              <article class="group">
+                <div class="aspect-[3/4] overflow-hidden border border-black bg-[#F5F5F7]">
+                  <img [src]="product.image" [alt]="product.brand" class="h-full w-full object-cover transition-all duration-300 ease-in-out group-hover:shadow-sm" />
+                </div>
+                <div class="mt-3">
+                  <h4 class="text-sm uppercase tracking-[0.08em]">{{ product.brand }}</h4>
+                  <p class="mt-1 text-xs text-black/65">{{ product.price }}</p>
+                  <button
+                    type="button"
+                    (click)="placeOrder(product.id)"
+                    class="mt-3 border border-black px-4 py-2 text-[10px] uppercase tracking-[0.14em] transition-all duration-300 ease-in-out hover:shadow-sm"
+                  >
+                    Add to Bag
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

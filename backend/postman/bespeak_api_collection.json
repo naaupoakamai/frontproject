@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "BESPEAK Marketplace API",
+    "_postman_id": "1f6818ee-37f7-42ac-8ceb-5a28261113fe",
+    "description": "Collection for JWT auth, products CRUD, and AI search.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"seller1\",\n  \"password\": \"Pass1234!\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login/"
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "body": "{\n  \"refresh\": \"<refresh_token>\",\n  \"access\": \"<access_token>\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth - Refresh",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"<refresh_token>\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/refresh/"
+      }
+    },
+    {
+      "name": "Auth - Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refreshToken}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/logout/"
+      }
+    },
+    {
+      "name": "Categories - List (FBV)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/categories/"
+      }
+    },
+    {
+      "name": "Products - List (CBV)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/products/"
+      }
+    },
+    {
+      "name": "Products - Create (CBV)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"category\": 1,\n  \"title\": \"Minimal Wool Coat\",\n  \"description\": \"Structured black wool coat for evening.\",\n  \"price\": \"790.00\"\n}"
+        },
+        "url": "{{baseUrl}}/api/products/"
+      }
+    },
+    {
+      "name": "Products - Detail (CBV)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/products/1/"
+      }
+    },
+    {
+      "name": "Products - Update (Owner Seller)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"price\": \"820.00\"\n}"
+        },
+        "url": "{{baseUrl}}/api/products/1/"
+      }
+    },
+    {
+      "name": "Products - Delete (Owner Seller)",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+        "url": "{{baseUrl}}/api/products/1/"
+      }
+    },
+    {
+      "name": "SKUs by Product (FBV)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/products/1/skus/"
+      }
+    },
+    {
+      "name": "AI Search",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"Нужен минималистичный черный образ для ужина\"\n}"
+        },
+        "url": "{{baseUrl}}/api/ai-search/"
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "body": "{\n  \"query\": \"Нужен минималистичный черный образ для ужина\",\n  \"matched_product_ids\": [1, 3],\n  \"products\": []\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ]
+}

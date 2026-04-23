@@ -1,0 +1,113 @@
+<section class="border border-black bg-white p-5 md:p-10">
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <h2 class="font-['Didot','Playfair_Display',serif] text-2xl tracking-[0.12em] md:text-3xl">Seller Interface</h2>
+    <div class="flex border border-black">
+      <button
+        type="button"
+        (click)="setTab('inventory')"
+        class="px-4 py-2 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out"
+        [class.bg-black]="activeTab() === 'inventory'"
+        [class.text-white]="activeTab() === 'inventory'"
+      >
+        Inventory Management
+      </button>
+      <button
+        type="button"
+        (click)="setTab('create')"
+        class="px-4 py-2 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out"
+        [class.bg-black]="activeTab() === 'create'"
+        [class.text-white]="activeTab() === 'create'"
+      >
+        Create New Product
+      </button>
+    </div>
+  </div>
+
+  @if (activeTab() === 'inventory') {
+    <div class="fade-in mt-8 border border-black">
+      <div class="hidden grid-cols-12 border-b border-black bg-[#F5F5F7] px-4 py-3 text-xs uppercase tracking-[0.14em] md:grid">
+        <span class="col-span-5">Name</span>
+        <span class="col-span-2">Price</span>
+        <span class="col-span-2">Sales</span>
+        <span class="col-span-3">Delete</span>
+      </div>
+
+      @if (isLoading()) {
+        <p class="p-4 text-sm text-black/60">Loading inventory...</p>
+      } @else if (products().length === 0) {
+        <p class="p-4 text-sm text-black/60">Inventory is empty. Create your first product.</p>
+      } @else {
+        @for (product of products(); track product.id) {
+          <div class="grid gap-3 border-b border-black px-4 py-4 text-sm md:grid-cols-12 md:items-center">
+            <div class="md:col-span-5">
+              <p class="font-medium uppercase tracking-[0.08em]">{{ product.title }}</p>
+              <p class="mt-1 text-xs text-black/60">{{ product.description }}</p>
+            </div>
+            <p class="md:col-span-2">${{ product.price }}</p>
+            <p class="md:col-span-2">{{ salesMap()[product.id] || 0 }}</p>
+            <div class="flex gap-3 md:col-span-3">
+              <button
+                type="button"
+                (click)="startEdit(product)"
+                class="text-[10px] uppercase tracking-[0.14em] underline underline-offset-4"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                (click)="deleteProduct(product.id)"
+                class="text-[10px] uppercase tracking-[0.14em] underline underline-offset-4"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  } @else {
+    <article class="fade-in mt-8 border border-black p-6 md:mx-auto md:max-w-2xl md:p-10">
+      <h3 class="font-['Didot','Playfair_Display',serif] text-xl tracking-[0.1em]">
+        @if (editingProductId()) { Edit Product } @else { Create New Product }
+      </h3>
+
+      <form [formGroup]="productForm" (ngSubmit)="editingProductId() ? saveEdit() : createProduct()" class="mt-8 grid gap-6 md:grid-cols-2">
+        <div>
+          <label class="text-xs uppercase tracking-[0.14em] text-black/60">Name</label>
+          <input formControlName="title" class="mt-2 w-full border-0 border-b border-black bg-transparent p-0 pb-3 text-sm outline-none" />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-[0.14em] text-black/60">Brand</label>
+          <input formControlName="brand" class="mt-2 w-full border-0 border-b border-black bg-transparent p-0 pb-3 text-sm outline-none" />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-[0.14em] text-black/60">Price</label>
+          <input formControlName="price" class="mt-2 w-full border-0 border-b border-black bg-transparent p-0 pb-3 text-sm outline-none" />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-[0.14em] text-black/60">Category</label>
+          <select formControlName="category" class="mt-2 w-full border-0 border-b border-black bg-transparent p-0 pb-3 text-sm outline-none">
+            <option [ngValue]="null">Select category</option>
+            @for (category of categories(); track category.id) {
+              <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-[0.14em] text-black/60">AI-Description</label>
+          <textarea formControlName="description" rows="6" class="mt-2 w-full border-0 border-b border-black bg-transparent p-0 pb-3 text-sm outline-none"></textarea>
+        </div>
+        <div class="md:col-span-2 flex gap-3">
+          <button type="submit" class="border border-black px-6 py-3 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out hover:shadow-sm">
+            @if (isSubmitting()) { Saving... } @else if (editingProductId()) { Update Product } @else { Create Product }
+          </button>
+          @if (editingProductId()) {
+            <button type="button" (click)="cancelEdit()" class="border border-black px-6 py-3 text-xs uppercase tracking-[0.14em] transition-all duration-300 ease-in-out hover:shadow-sm">
+              Cancel Edit
+            </button>
+          }
+        </div>
+      </form>
+    </article>
+  }
+</section>
